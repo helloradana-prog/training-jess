@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Jessica Silva · Consultoria de Treino</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+
+  :root {
+    --cream: #F7F5F2;
+    --offwhite: #FDFCFB;
+    --purple-light: #E8E0F0;
+    --purple-mid: #C4A8D8;
+    --purple: #9B72BB;
+    --purple-dark: #6D4D8A;
+    --green-light: #DFF0E8;
+    --green-mid: #A8D4B8;
+    --green: #6BB58A;
+    --green-dark: #4A8A65;
+    --text-dark: #2C2438;
+    --text-mid: #6B5F7A;
+    --text-light: #A898B8;
+    --border: #E8E2EE;
+    --shadow: rgba(107, 77, 138, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--offwhite);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; }
+  .header-name { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--purple-dark); }
+  .header-sub { font-size: 11px; color: var(--text-light); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 1px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--purple-mid), var(--green-mid)); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--offwhite);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .nav-btn {
+    flex: 1; padding: 10px 4px 8px;
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--text-light); font-size: 10px; font-family: 'DM Sans', sans-serif;
+    transition: color 0.2s;
+  }
+  .nav-btn.active { color: var(--purple-dark); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-btn.active .nav-icon { filter: none; }
+
+  /* ── CONTENT AREA ── */
+  .content { padding: 16px 16px 90px; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--offwhite);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px var(--shadow);
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: var(--purple-dark); margin-bottom: 10px;
+  }
+
+  /* ── HOME SCREEN ── */
+  .week-selector {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--offwhite);
+    border-radius: 14px; border: 1px solid var(--border);
+    padding: 12px 16px; margin-bottom: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .week-nav { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--purple); padding: 4px 8px; border-radius: 8px; }
+  .week-nav:active { background: var(--purple-light); }
+  .week-info { text-align: center; }
+  .week-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; }
+  .week-num { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--purple-dark); line-height: 1.1; }
+
+  .treino-cards { display: flex; flex-direction: column; gap: 10px; }
+  .treino-card {
+    border-radius: 16px; padding: 16px 18px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .treino-card:active { transform: scale(0.98); }
+  .treino-card.card-a { background: linear-gradient(135deg, #F0EBF8 0%, var(--offwhite) 100%); }
+  .treino-card.card-b { background: linear-gradient(135deg, #E8F4EE 0%, var(--offwhite) 100%); }
+  .treino-card.card-c { background: linear-gradient(135deg, #F0EBF8 0%, #E8F4EE 100%); }
+  .treino-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); margin-bottom: 4px; }
+  .treino-card-name { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text-dark); margin-bottom: 6px; }
+  .treino-card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .meta-pill {
+    font-size: 10px; padding: 3px 8px; border-radius: 20px;
+    background: rgba(255,255,255,0.7); color: var(--text-mid);
+  }
+  .treino-card-dot {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid);
+  }
+  .treino-card.done .treino-card-dot { background: var(--green); }
+  .treino-card-progress {
+    margin-top: 10px; height: 3px; border-radius: 2px;
+    background: var(--border); overflow: hidden;
+  }
+  .treino-card-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--purple-mid), var(--green-mid)); transition: width 0.4s; }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .stat-card { background: var(--offwhite); border-radius: 12px; border: 1px solid var(--border); padding: 12px; text-align: center; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--purple-dark); }
+  .stat-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+
+  /* ── TREINO SCREEN ── */
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    color: var(--purple); font-size: 14px; font-family: 'DM Sans', sans-serif;
+    padding: 0 0 14px 0; font-weight: 500;
+  }
+  .treino-header-card {
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--purple-light), var(--green-light));
+    border: 1px solid var(--border);
+  }
+  .treino-h-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--purple); }
+  .treino-h-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--purple-dark); margin: 4px 0 8px; }
+  .treino-h-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-mid); }
+  .progress-wrap { margin-top: 12px; }
+  .progress-text { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mid); margin-bottom: 4px; }
+  .progress-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,0.5); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width 0.4s; }
+
+  .section-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-light); padding: 6px 0 8px; font-weight: 600;
+  }
+
+  /* ── EXERCISE ROW ── */
+  .exercise-item {
+    background: var(--offwhite);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .exercise-item.checked { border-color: var(--green-mid); background: linear-gradient(135deg, var(--offwhite), #F0FAF4); }
+  .exercise-main {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+  }
+  .check-circle {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid var(--border); background: white;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; color: white; font-size: 14px;
+  }
+  .exercise-item.checked .check-circle {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  .exercise-info { flex: 1; min-width: 0; }
+  .exercise-name { font-size: 14px; font-weight: 500; color: var(--text-dark); line-height: 1.2; }
+  .exercise-item.checked .exercise-name { color: var(--text-mid); text-decoration: line-through; text-decoration-color: var(--green-mid); }
+  .exercise-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+  .rpe-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: var(--purple-light); color: var(--purple-dark); font-weight: 600; }
+  .expand-btn { font-size: 18px; color: var(--text-light); flex-shrink: 0; transition: transform 0.2s; }
+  .exercise-item.expanded .expand-btn { transform: rotate(180deg); }
+
+  .exercise-detail {
+    display: none; border-top: 1px solid var(--border);
+    padding: 14px; background: rgba(248,246,252,0.5);
+  }
+  .exercise-item.expanded .exercise-detail { display: block; }
+
+  .weight-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .weight-label { font-size: 12px; color: var(--text-mid); flex-shrink: 0; }
+  .weight-ctrl { display: flex; align-items: center; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .weight-btn { width: 36px; height: 36px; background: var(--cream); border: none; cursor: pointer; font-size: 18px; color: var(--purple); font-weight: 600; }
+  .weight-btn:active { background: var(--purple-light); }
+  .weight-val { min-width: 54px; text-align: center; font-size: 15px; font-weight: 600; color: var(--text-dark); font-family: 'Playfair Display', serif; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .weight-unit { font-size: 11px; color: var(--text-light); }
+
+  .tip-box { background: var(--purple-light); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--purple-dark); line-height: 1.5; margin-bottom: 10px; }
+  .tip-box strong { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 3px; color: var(--purple); }
+  .focus-box { background: var(--green-light); border-radius: 10px; padding: 8px 12px; font-size: 12px; color: var(--green-dark); margin-bottom: 10px; }
+  .focus-box strong { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .error-box { background: #FFF0F0; border-radius: 10px; padding: 8px 12px; font-size: 12px; color: #C44; margin-bottom: 8px; }
+  .error-box strong { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .sets-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .set-chip {
+    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 500;
+    border: 1.5px solid var(--border); background: white; cursor: pointer;
+    color: var(--text-mid); transition: all 0.15s;
+  }
+  .set-chip.done { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+
+  .cardio-block {
+    background: linear-gradient(135deg, var(--green-light), var(--offwhite));
+    border: 1px solid var(--green-mid);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
+  }
+  .cardio-block h4 { font-size: 13px; color: var(--green-dark); margin-bottom: 4px; }
+  .cardio-block p { font-size: 12px; color: var(--text-mid); }
+
+  .complete-btn {
+    width: 100%; padding: 16px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--purple), var(--green));
+    border: none; color: white; font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    margin-top: 16px; letter-spacing: 0.02em;
+    transition: opacity 0.2s; box-shadow: 0 4px 16px rgba(107,77,138,0.25);
+  }
+  .complete-btn:active { opacity: 0.88; }
+  .complete-btn:disabled { background: var(--border); color: var(--text-light); box-shadow: none; }
+
+  /* ── GUIA ── */
+  .guia-list { display: flex; flex-direction: column; gap: 8px; }
+  .guia-item { background: var(--offwhite); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .guia-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; }
+  .guia-name { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+  .guia-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--purple-light); color: var(--purple-dark); font-weight: 600; flex-shrink: 0; }
+  .guia-arrow { font-size: 16px; color: var(--text-light); transition: transform 0.2s; }
+  .guia-item.open .guia-arrow { transform: rotate(180deg); }
+  .guia-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+  .guia-item.open .guia-body { display: block; }
+  .guia-row { margin-top: 10px; font-size: 12px; color: var(--text-mid); line-height: 1.55; }
+  .guia-row strong { color: var(--text-dark); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 2px; }
+  .guia-row + .guia-row { margin-top: 8px; }
+
+  /* ── AVALIAÇÃO ── */
+  .eval-week-sel { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .eval-week-sel select {
+    flex: 1; padding: 10px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--offwhite);
+    font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text-dark);
+    appearance: none; -webkit-appearance: none;
+  }
+
+  .slider-item { margin-bottom: 16px; }
+  .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .slider-name { font-size: 13px; font-weight: 500; color: var(--text-dark); }
+  .slider-val { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--purple-dark); min-width: 24px; text-align: right; }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 5px;
+    border-radius: 3px; background: var(--border); outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--green));
+    cursor: pointer; box-shadow: 0 2px 8px rgba(107,77,138,0.3);
+  }
+
+  .notes-area {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--border); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-dark); background: var(--offwhite);
+    resize: none; margin-bottom: 12px;
+  }
+  .notes-area:focus { outline: none; border-color: var(--purple-mid); }
+
+  .save-btn {
+    width: 100%; padding: 14px; border-radius: 12px;
+    background: var(--purple); border: none; color: white;
+    font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .save-btn:active { opacity: 0.85; }
+
+  /* ── HISTÓRICO ── */
+  .hist-empty { text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 14px; }
+  .hist-item {
+    background: var(--offwhite); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
+  }
+  .hist-week-label { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--purple-dark); margin-bottom: 8px; }
+  .hist-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .hist-row:last-child { border-bottom: none; }
+  .hist-metric { color: var(--text-dark); font-weight: 500; }
+  .medidas-card { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .medida-item { background: var(--offwhite); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+  .medida-val { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--purple-dark); }
+  .medida-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .chip { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: var(--purple-light); color: var(--purple-dark); }
+  .chip.green { background: var(--green-light); color: var(--green-dark); }
+
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--purple-dark); color: white; padding: 10px 20px; border-radius: 20px;
+    font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .intensidade-legend {
+    background: var(--offwhite); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 12px;
+  }
+  .intensidade-legend h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px; }
+  .rpe-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; }
+  .rpe-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <div>
+      <div class="header-name">Jessica Silva</div>
+      <div class="header-sub">Consultoria · Full Body</div>
+    </div>
+    <div class="avatar">JS</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══ HOME ══ -->
+  <div class="screen active" id="screen-home">
+    <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg,var(--purple-light),var(--green-light));border-color:var(--purple-mid);">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--purple);margin-bottom:4px;">💡 Dica do Treino</div>
+      <div style="font-size:13px;color:var(--purple-dark);line-height:1.5;font-weight:500;">Mantenha a respiração controlada para contração do abdômen — isso melhora a maioria dos movimentos.</div>
+    </div>
+
+    <div class="week-selector">
+      <button class="week-nav" onclick="changeWeek(-1)">‹</button>
+      <div class="week-info">
+        <div class="week-label">Semana atual</div>
+        <div class="week-num" id="week-display">1</div>
+      </div>
+      <button class="week-nav" onclick="changeWeek(1)">›</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val" id="stat-done">0</div>
+        <div class="stat-label">Treinos feitos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-streak">0</div>
+        <div class="stat-label">Semanas avaliadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">20</div>
+        <div class="stat-label">Semanas total</div>
+      </div>
+    </div>
+
+    <div class="section-label">Treinos da Semana</div>
+    <div class="treino-cards">
+      <div class="treino-card card-a" onclick="openTreino('A')">
+        <div class="treino-card-label">Treino A</div>
+        <div class="treino-card-name">Full Body · Quadríceps &amp; Costas</div>
+        <div class="treino-card-meta">
+          <span class="meta-pill">7 exercícios</span>
+          <span class="meta-pill">Abdominal</span>
+          <span class="meta-pill">20min Esteira</span>
+        </div>
+        <div class="treino-card-progress"><div class="treino-card-bar" id="bar-a" style="width:0%"></div></div>
+        <div class="treino-card-dot" id="dot-a"></div>
+      </div>
+      <div class="treino-card card-b" onclick="openTreino('B')">
+        <div class="treino-card-label">Treino B</div>
+        <div class="treino-card-name">Full Body · Peitoral &amp; Tríceps</div>
+        <div class="treino-card-meta">
+          <span class="meta-pill">7 exercícios</span>
+          <span class="meta-pill">Lombar</span>
+          <span class="meta-pill">20min Bike</span>
+        </div>
+        <div class="treino-card-progress"><div class="treino-card-bar" id="bar-b" style="width:0%"></div></div>
+        <div class="treino-card-dot" id="dot-b"></div>
+      </div>
+      <div class="treino-card card-c" onclick="openTreino('C')">
+        <div class="treino-card-label">Treino C</div>
+        <div class="treino-card-name">Full Body · Glúteo &amp; Ombros</div>
+        <div class="treino-card-meta">
+          <span class="meta-pill">7 exercícios</span>
+          <span class="meta-pill">Abdominal</span>
+          <span class="meta-pill">HIIT</span>
+        </div>
+        <div class="treino-card-progress"><div class="treino-card-bar" id="bar-c" style="width:0%"></div></div>
+        <div class="treino-card-dot" id="dot-c"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TREINO ══ -->
+  <div class="screen" id="screen-treino">
+    <button class="back-btn" onclick="goBack()">← Voltar</button>
+    <div class="treino-header-card" id="treino-header"></div>
+    <div id="treino-body"></div>
+  </div>
+
+  <!-- ══ GUIA ══ -->
+  <div class="screen" id="screen-guia">
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Guia de Execução</div>
+      <div style="font-size:12px;color:var(--text-mid);">Toque em qualquer exercício para ver instruções detalhadas.</div>
+    </div>
+    <div class="intensidade-legend">
+      <h4>Escala de Intensidade RPE</h4>
+      <div class="rpe-row"><div class="rpe-dot" style="background:#A8D4B8"></div><strong>RPE 6</strong> — Confortável</div>
+      <div class="rpe-row"><div class="rpe-dot" style="background:#6BB58A"></div><strong>RPE 7</strong> — Moderadamente difícil</div>
+      <div class="rpe-row"><div class="rpe-dot" style="background:#C4A8D8"></div><strong>RPE 8</strong> — Difícil, mas com margem</div>
+      <div class="rpe-row"><div class="rpe-dot" style="background:#9B72BB"></div><strong>RPE 9</strong> — Quase no limite</div>
+      <div class="rpe-row"><div class="rpe-dot" style="background:#6D4D8A"></div><strong>RPE 10</strong> — Esforço máximo</div>
+    </div>
+    <div class="guia-list" id="guia-list"></div>
+  </div>
+
+  <!-- ══ AVALIAÇÃO ══ -->
+  <div class="screen" id="screen-aval">
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Perfil</div>
+      <div class="medidas-card" style="margin-bottom:10px;">
+        <div class="medida-item"><div class="medida-val">Jessica</div><div class="medida-label">Nome</div></div>
+        <div class="medida-item"><div class="medida-val">30 anos</div><div class="medida-label">Idade</div></div>
+        <div class="medida-item"><div class="medida-val">64,5kg</div><div class="medida-label">Peso inicial</div></div>
+        <div class="medida-item"><div class="medida-val">76cm</div><div class="medida-label">Cintura</div></div>
+        <div class="medida-item"><div class="medida-val">94cm</div><div class="medida-label">Quadril</div></div>
+        <div class="medida-item"><div class="medida-val">59cm</div><div class="medida-label">Coxa</div></div>
+        <div class="medida-item"><div class="medida-val">25cm</div><div class="medida-label">Bíceps</div></div>
+      </div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin-bottom:6px;">Objetivos</div>
+      <div class="chip-row">
+        <span class="chip">🎯 Definição</span>
+        <span class="chip">⚡ Resistência</span>
+        <span class="chip green">20 semanas</span>
+      </div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-light);margin:10px 0 6px;">Obstáculos</div>
+      <div class="chip-row">
+        <span class="chip">😰 Ansiedade</span>
+        <span class="chip">🔄 Ciclo Hormonal</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Avaliação Semanal</div>
+      <div style="font-size:12px;color:var(--text-mid);margin-bottom:12px;">Registre como foi sua semana de treino.</div>
+    <div class="eval-week-sel">
+      <select id="eval-week-select">
+        <script>for(let i=1;i<=20;i++) document.write(`<option value="${i}">Semana ${i}</option>`)</script>
+      </select>
+    </div>
+      <div id="sliders-container"></div>
+      <label style="font-size:12px;color:var(--text-mid);display:block;margin-bottom:6px;">Observações</label>
+      <textarea class="notes-area" id="eval-notes" rows="3" placeholder="Como foi a semana? Alguma dor ou observação?"></textarea>
+      <button class="save-btn" onclick="saveEval()">Salvar Avaliação</button>
+    </div>
+  </div>
+
+  <!-- ══ HISTÓRICO ══ -->
+  <div class="screen" id="screen-hist">
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Histórico de Progresso</div>
+      <div style="font-size:12px;color:var(--text-mid);">20 semanas de acompanhamento.</div>
+    </div>
+    <div id="hist-content"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+    <span class="nav-icon">💪</span><span>Treino</span>
+  </button>
+  <button class="nav-btn" id="nav-guia" onclick="switchTab('guia')">
+    <span class="nav-icon">📋</span><span>Guia</span>
+  </button>
+  <button class="nav-btn" id="nav-aval" onclick="switchTab('aval')">
+    <span class="nav-icon">📊</span><span>Avaliação</span>
+  </button>
+  <button class="nav-btn" id="nav-hist" onclick="switchTab('hist')">
+    <span class="nav-icon">📈</span><span>Histórico</span>
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+
+const TREINOS = {
+  A: {
+    name: 'Treino A — Full Body',
+    focus: 'Quadríceps · Costas · Bíceps',
+    cardio: '20 min Esteira',
+    extras: ['Abdominal (vídeo)'],
+    exercises: [
+      { id:'cadeira-ext', name:'Cadeira Extensora', series:'4x10', rest:'1min 30s', rpe:'RPE 8', obj:'Isolamento de quadríceps', baseW:20, prog:60, step:2.5 },
+      { id:'mesa-flex', name:'Mesa Flexora', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Isquiotibiais (posterior de coxa)', baseW:20, prog:35, step:2.5 },
+      { id:'agach-sumo', name:'Agachamento Sumo c/ Halter', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Desenvolvimento de glúteo', baseW:30, prog:50, step:2.5 },
+      { id:'pull-down', name:'Pull Down na Polia', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Fortalecimento de dorsais', baseW:17.5, prog:null, step:2.5 },
+      { id:'remada-uni', name:'Remada Unilateral na Máquina', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Fortalecimento miolo das costas', baseW:25, prog:null, step:2.5 },
+      { id:'biceps-corda', name:'Bíceps Martelo c/ Corda na Polia', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Fortalecimento braquial/bíceps', baseW:17.5, prog:null, step:2.5 },
+    ]
+  },
+  B: {
+    name: 'Treino B — Full Body',
+    focus: 'Quadríceps · Peitoral · Tríceps',
+    cardio: '20 min Bike',
+    extras: ['Lombar (vídeo)'],
+    exercises: [
+      { id:'agach-taca', name:'Agachamento Taça c/ Halter', series:'4x10', rest:'1min', rpe:'RPE 8', obj:'Quadríceps, glúteo e core', baseW:15, prog:22.5, step:2.5 },
+      { id:'cad-flex', name:'Cadeira Flexora', series:'4x10', rest:'1min', rpe:'RPE 7', obj:'Fortalecimento posterior de coxa', baseW:40, prog:null, step:2.5 },
+      { id:'stepup', name:'Step Up', series:'4x10', rest:'1min 30s', rpe:'RPE 6', obj:'Desenvolvimento glúteos', baseW:4, prog:8, step:1 },
+      { id:'flexao', name:'Flexão', series:'3x5', rest:'1min', rpe:'Leve', obj:'Estabilidade / Core / Peitoral', baseW:0, prog:null, step:0 },
+      { id:'peekdeek', name:'Peekdeek', series:'3x10', rest:'1min', rpe:'RPE 7', obj:'Desenvolvimento peitoral', baseW:25, prog:null, step:2.5 },
+      { id:'triceps-seq', name:'Sequência Tríceps', series:'3x8', rest:'1min 45s', rpe:'RPE 7', obj:'Fortalecimento tríceps', baseW:4, prog:9, step:1 },
+    ]
+  },
+  C: {
+    name: 'Treino C — Full Body',
+    focus: 'Glúteo · Posterior · Ombros',
+    cardio: 'HIIT (vídeo)',
+    extras: ['Abdominal (vídeo)'],
+    exercises: [
+      { id:'elev-pelv', name:'Elevação Pélvica', series:'4x10', rest:'1min 30s', rpe:'RPE 8', obj:'Glúteo/posterior de coxa', baseW:30, prog:50, step:2.5 },
+      { id:'stiff', name:'Stiff', series:'4x10', rest:'1min', rpe:'RPE 8', obj:'Posterior de coxa', baseW:20, prog:20, step:2.5 },
+      { id:'coice-polia', name:'Coice na Polia', series:'3x10', rest:'1min', rpe:'RPE 8', obj:'Isolamento glúteo máximo', baseW:9, prog:9, step:1 },
+      { id:'cad-abdut', name:'Cadeira Abdutora', series:'3x10', rest:'1min', rpe:'RPE 7', obj:'Fortalecimento glúteo médio', baseW:40, prog:55, step:2.5 },
+      { id:'ombro-seq', name:'Sequência de Ombro', series:'3x8', rest:'2min', rpe:'RPE 7', obj:'Desenvolvimento e fortalecimento de deltóides', baseW:2, prog:null, step:0.5 },
+      { id:'rosca-dir', name:'Rosca Direta', series:'3x8', rest:'1min', rpe:'RPE 7', obj:'Fortalecimento de bíceps', baseW:6, prog:null, step:1 },
+    ]
+  }
+};
+
+const GUIA = [
+  { id:'cadeira-ext', name:'Cadeira Extensora', treino:'A', focus:'Quadríceps', como:'Pés levemente virados para fora. Sem estender totalmente os joelhos. Segura na força, desce controlado. Suba contando 2 e desça contando 3.', erro:'Travar os joelhos / superestender / pés relaxados / movimento de gangorra contínuo.', dica:'Suba contando 2, desça contando 3.' },
+  { id:'mesa-flex', name:'Mesa Flexora', treino:'A', focus:'Posterior de coxa', como:'Flexiona os joelhos aproximando os calcanhares dos glúteos e retorne lentamente, mantendo o quadril estável.', erro:'Tirar o quadril do banco ou usar impulso.', dica:'Controle a volta e mantenha o abdômen ativo.' },
+  { id:'agach-sumo', name:'Agachamento Sumo c/ Halter', treino:'A', focus:'Glúteos · Adutores · Posteriores', como:'Ideal com halter e step / ou na máquina. Afaste bem os pés e mantenha as pontas para fora. Sente o quadril para trás durante a descida.', erro:'Deixar o joelho fechar ou perder postura da coluna.', dica:'Abra os joelhos acompanhando a linha dos pés. Coluna inclinada e peito aberto.' },
+  { id:'pull-down', name:'Pull Down na Polia', treino:'A', focus:'Latíssimo do dorso', como:'Coluna inclinada diagonal + longe da polia. Escápula encaixada e peito estufado. Puxa corda para baixo até a cintura. Movimento de volta controlado.', erro:'Puxar com os braços / balançar o tronco / encolher os ombros.', dica:'Pense em levar os cotovelos lá para trás.' },
+  { id:'remada-uni', name:'Remada Unilateral na Máquina', treino:'A', focus:'Costas', como:'Mão na posição neutra (de lado). Peito estufado. Remar até o braço ficar na linha das costas.', erro:'Girar o tronco ou ultrapassar excessivamente a linha das costas.', dica:'Mantenha o movimento controlado e concentre-se na escápula.' },
+  { id:'biceps-corda', name:'Bíceps Martelo c/ Corda na Polia', treino:'A', focus:'Bíceps e braquial', como:'Costas retas e peito estufado. Braços posicionados juntos ao corpo na linha das costas. Cotovelos fixos durante a execução.', erro:'Balançar o corpo ou mover os cotovelos à frente.', dica:'Movimento mais controlado.' },
+  { id:'agach-taca', name:'Agachamento Taça c/ Halter', treino:'B', focus:'Quadríceps · Glúteo · Core', como:'Pés levemente separados (diferença de um pé entre eles). Com anilha para apoiar o calcanhar. Coluna levemente inclinada. Cadência: desce em 3, sobe em 2. Expira pra descer, inspira pra subir.', erro:'Curvar lombar ou deixar os joelhos virarem para dentro.', dica:'Segure o peso próximo ao peito e abdômen ativo.' },
+  { id:'cad-flex', name:'Cadeira Flexora', treino:'B', focus:'Posteriores', como:'Peso moderado. A perna precisa estar bem presa e reta entre o peso e a almofada. Pés sempre virados para cima.', erro:'Levantar o quadril ou usar excesso de carga.', dica:'Movimento contínuo e controlado.' },
+  { id:'stepup', name:'Step Up', treino:'B', focus:'Glúteos · Estabilidade unilateral', como:'Apoie todo o pé no banco. Suba usando a força principal da perna que está no banco. Encoste a ponta do pé e volta. Coluna inclinada.', erro:'Impulsionar excessivamente com a perna que desce.', dica:'Concentre a força na perna de cima e controle a descida.' },
+  { id:'flexao', name:'Flexão', treino:'B', focus:'Peitoral · Tríceps · Core', como:'Corpo alinhado. Mãos na largura dos ombros. Cotovelos levemente inclinados para trás.', erro:'Encolher ombros / deixar o quadril cair / abrir demais os cotovelos.', dica:'Core ativo, inspira pra subir, expira pra descer encaixando o abdômen. Contrair glúteo.' },
+  { id:'peekdeek', name:'Peekdeek', treino:'B', focus:'Peitoral', como:'Banco posicionado onde a mão fica na altura do peito (linha do mamilo). Abrindo estufando peito e fechando esmagando peito.', erro:'Encolher os ombros / inclinar a cabeça / perder a postura.', dica:'Faça uma pequena pausa na contração.' },
+  { id:'triceps-seq', name:'Sequência Tríceps', treino:'B', focus:'Tríceps', como:'Ver vídeo de referência.', erro:'Abrir os cotovelos / usar impulso.', dica:'Controle principalmente o retorno do movimento.' },
+  { id:'elev-pelv', name:'Elevação Pélvica', treino:'C', focus:'Glúteo máximo', como:'Cinto um palmo abaixo da cintura no início das coxas. Contrai o glúteo no topo. Sobe empurrando para cima. Expira quando sobe, inspira quando desce.', erro:'Hiperestender a lombar em vez de contrair os glúteos.', dica:'Empurre o chão com os calcanhares.' },
+  { id:'stiff', name:'Stiff', treino:'C', focus:'Posteriores e glúteo', como:'Pernas na linha do ombro. Joelho no ponto de apoio (não totalmente estendido). Peito estufado. Barra na mão. Desce controladamente jogando a bunda para trás até sentir os músculos de trás da perna. Volta controlado.', erro:'Arredondar a lombar em vez de contrair o glúteo / superextender a perna.', dica:'Pense em empurrar o quadril para trás mantendo a coluna neutra.' },
+  { id:'coice-polia', name:'Coice na Polia', treino:'C', focus:'Glúteo máximo', como:'Com a polia na altura do joelho. Movimento de abaixar a perna. Coluna neutra. Quadril levando a perna para trás. Sem movimentar a lombar. Retorne lentamente.', erro:'Arquear a lombar ou balançar o tronco.', dica:'O movimento deve acontecer no quadril e não nas costas.' },
+  { id:'cad-abdut', name:'Cadeira Abdutora', treino:'C', focus:'Glúteo médio e abdutores', como:'Abre as pernas contando 2, fecha contando 3. Peso moderado. Segura 2 segundos na contração máxima.', erro:'Inclinar o tronco ou deixar o peso sem controle na volta.', dica:'Mantenha o tronco firme e foque em sentir a lateral do glúteo.' },
+  { id:'ombro-seq', name:'Sequência de Ombro', treino:'C', focus:'Deltóides completos', como:'Ver vídeo de referência.', erro:'Elevar os ombros ou usar balanço corporal.', dica:'Prefira menos carga e mais controle.' },
+  { id:'rosca-dir', name:'Rosca Direta', treino:'C', focus:'Bíceps', como:'Braços bem rente ao corpo. Peito estufado. Cotovelos fixos. Movimento moderado.', erro:'Balançar o tronco ou projetar o cotovelo pra frente.', dica:'Suba controlado e desça lentamente.' },
+];
+
+const METRICS = ['Frequência','Humor','Energia','Dificuldade','Dor/Desconforto','Sono','Alimentação'];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+
+let currentWeek = 1;
+let currentTreino = null;
+let state = JSON.parse(localStorage.getItem('jessica-state') || '{}');
+// state structure: { week1: { A: { checks: {id: bool}, weights: {id: num} }, B: {...}, C: {...}, eval: {...} }, week2: ... }
+
+function getWeekState(w, t) {
+  if(!state[`w${w}`]) state[`w${w}`] = {};
+  if(t && !state[`w${w}`][t]) state[`w${w}`][t] = { checks: {}, weights: {} };
+  return t ? state[`w${w}`][t] : state[`w${w}`];
+}
+
+function save() { localStorage.setItem('jessica-state', JSON.stringify(state)); }
+
+// Weight with progression per week
+function getWeight(exId, week, treino) {
+  const ex = TREINOS[treino].exercises.find(e=>e.id===exId);
+  if(!ex) return 0;
+  const ws = getWeekState(week, treino);
+  if(ws.weights[exId] !== undefined) return ws.weights[exId];
+  // auto-progression
+  if(ex.baseW === 0) return 0;
+  if(!ex.prog) return ex.baseW;
+  const range = ex.prog - ex.baseW;
+  const perWeek = range / 19;
+  return Math.round((ex.baseW + perWeek * (week - 1)) * 2) / 2;
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(tab==='home') { document.getElementById('screen-home').classList.add('active'); document.getElementById('nav-home').classList.add('active'); renderHome(); }
+  else if(tab==='guia') { document.getElementById('screen-guia').classList.add('active'); document.getElementById('nav-guia').classList.add('active'); renderGuia(); }
+  else if(tab==='aval') { document.getElementById('screen-aval').classList.add('active'); document.getElementById('nav-aval').classList.add('active'); renderEval(); }
+  else if(tab==='hist') { document.getElementById('screen-hist').classList.add('active'); document.getElementById('nav-hist').classList.add('active'); renderHist(); }
+}
+
+function goBack() { switchTab('home'); }
+
+function openTreino(t) {
+  currentTreino = t;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-treino').classList.add('active');
+  renderTreino(t);
+}
+
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+
+function changeWeek(d) {
+  currentWeek = Math.max(1, Math.min(20, currentWeek + d));
+  renderHome();
+}
+
+function renderHome() {
+  document.getElementById('week-display').textContent = currentWeek;
+  // stats
+  let totalDone = 0;
+  for(let w=1;w<=20;w++) for(let t of ['A','B','C']) {
+    const ws = state[`w${w}`]?.[t];
+    if(ws) { const ex = TREINOS[t].exercises; if(ex.every(e=>ws.checks[e.id])) totalDone++; }
+  }
+  document.getElementById('stat-done').textContent = totalDone;
+  let streak = 0;
+  for(let w=currentWeek;w>=1;w--) { if(state[`w${w}`]?.eval) streak++; else break; }
+  document.getElementById('stat-streak').textContent = streak;
+
+  // progress bars
+  for(const t of ['A','B','C']) {
+    const ws = state[`w${currentWeek}`]?.[t];
+    const ex = TREINOS[t].exercises;
+    let done = ws ? ex.filter(e=>ws.checks[e.id]).length : 0;
+    const pct = Math.round(done/ex.length*100);
+    document.getElementById(`bar-${t.toLowerCase()}`).style.width = pct+'%';
+    const dot = document.getElementById(`dot-${t.toLowerCase()}`);
+    if(pct===100) dot.style.background = '#6BB58A';
+    else dot.style.background = '#C4A8D8';
+  }
+}
+
+// ══════════════════════════════════════════
+// TREINO SCREEN
+// ══════════════════════════════════════════
+
+function renderTreino(t) {
+  const tr = TREINOS[t];
+  const week = currentWeek;
+  const ws = getWeekState(week, t);
+  const ex = tr.exercises;
+  const done = ex.filter(e=>ws.checks[e.id]).length;
+  const pct = Math.round(done/ex.length*100);
+
+  document.getElementById('treino-header').innerHTML = `
+    <div class="treino-h-label">Semana ${week} · ${t === 'A' ? 'Treino A' : t==='B'?'Treino B':'Treino C'}</div>
+    <div class="treino-h-title">${tr.name}</div>
+    <div class="treino-h-meta"><span>${tr.focus}</span></div>
+    <div class="progress-wrap">
+      <div class="progress-text"><span>${done}/${ex.length} exercícios</span><span>${pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+
+  let html = `<div class="section-label">Aquecimento</div>
+  <div class="cardio-block">
+    <h4>🔥 Mobilidade</h4><p>2 séries · 45s · Leve — Barra 3x · 45s · Aquecimento técnico</p>
+  </div>
+  <div class="section-label">Exercícios Principais</div>`;
+
+  for(const e of ex) {
+    const checked = ws.checks[e.id] ? 'checked' : '';
+    const w = getWeight(e.id, week, t);
+    const setsCount = parseInt(e.series.split('x')[0]);
+    let setsHtml = '';
+    const doneSets = ws[`sets_${e.id}`] || 0;
+    for(let i=1;i<=setsCount;i++) {
+      const setDone = i<=doneSets ? 'done' : '';
+      setsHtml += `<div class="set-chip ${setDone}" onclick="toggleSet('${e.id}',${i},'${t}',${setsCount})">${i}ª série</div>`;
+    }
+    const guiaItem = GUIA.find(g=>g.id===e.id);
+    const weightInput = e.baseW > 0 ? `
+      <div class="weight-row">
+        <span class="weight-label">Carga</span>
+        <div class="weight-ctrl">
+          <button class="weight-btn" onclick="adjWeight('${e.id}','${t}',-${e.step})">−</button>
+          <div class="weight-val" id="wval-${e.id}">${w > 0 ? w+'<span class="weight-unit">kg</span>' : '—'}</div>
+          <button class="weight-btn" onclick="adjWeight('${e.id}','${t}',${e.step})">+</button>
+        </div>
+      </div>` : '';
+    html += `
+    <div class="exercise-item ${checked}" id="ex-${e.id}">
+      <div class="exercise-main" onclick="toggleExpand('${e.id}')">
+        <div class="check-circle" onclick="event.stopPropagation();toggleCheck('${e.id}','${t}')">${checked?'✓':''}</div>
+        <div class="exercise-info">
+          <div class="exercise-name">${e.name}</div>
+          <div class="exercise-meta">${e.series} · ${e.rest} · <span class="rpe-badge">${e.rpe}</span></div>
+        </div>
+        <div class="expand-btn">⌄</div>
+      </div>
+      <div class="exercise-detail">
+        ${weightInput}
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:6px;">Marque cada série concluída:</div>
+        <div class="sets-row">${setsHtml}</div>
+        <div style="font-size:11px;color:var(--text-mid);margin-top:10px;">🎯 ${e.obj}</div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="section-label">Cardio & Extras</div>
+  <div class="cardio-block">
+    <h4>🏃 ${tr.cardio}</h4><p>Intensidade moderada</p>
+  </div>`;
+  for(const ex2 of tr.extras) html += `<div class="cardio-block"><h4>⚡ ${ex2}</h4><p>Consultar vídeo de referência</p></div>`;
+
+  const allDone = ex.every(e=>ws.checks[e.id]);
+  html += `<button class="complete-btn" ${allDone?'':'disabled'} onclick="completeTreino('${t}')">
+    ${allDone ? '✅ Treino Concluído!' : `Complete todos os exercícios (${done}/${ex.length})`}
+  </button><div style="height:8px"></div>`;
+
+  document.getElementById('treino-body').innerHTML = html;
+}
+
+function toggleCheck(exId, t) {
+  const ws = getWeekState(currentWeek, t);
+  ws.checks[exId] = !ws.checks[exId];
+  save();
+  renderTreino(t);
+  if(ws.checks[exId]) showToast('Exercício marcado! 💪');
+}
+
+function toggleSet(exId, setNum, t, total) {
+  const ws = getWeekState(currentWeek, t);
+  const current = ws[`sets_${exId}`] || 0;
+  ws[`sets_${exId}`] = (current >= setNum) ? setNum-1 : setNum;
+  if(ws[`sets_${exId}`] >= total) { ws.checks[exId] = true; showToast('Exercício concluído! 🎯'); }
+  save();
+  renderTreino(t);
+}
+
+function toggleExpand(exId) {
+  const el = document.getElementById(`ex-${exId}`);
+  el.classList.toggle('expanded');
+}
+
+function adjWeight(exId, t, delta) {
+  const ws = getWeekState(currentWeek, t);
+  const current = getWeight(exId, currentWeek, t);
+  ws.weights[exId] = Math.max(0, Math.round((current + delta)*2)/2);
+  save();
+  const el = document.getElementById(`wval-${exId}`);
+  if(el) el.innerHTML = ws.weights[exId] > 0 ? ws.weights[exId]+'<span class="weight-unit">kg</span>' : '—';
+}
+
+function completeTreino(t) {
+  showToast('Treino A finalizado! 🏆');
+  setTimeout(goBack, 800);
+}
+
+// ══════════════════════════════════════════
+// GUIA
+// ══════════════════════════════════════════
+
+function renderGuia() {
+  const html = GUIA.map(g => `
+    <div class="guia-item" id="guia-${g.id}">
+      <div class="guia-header" onclick="toggleGuia('${g.id}')">
+        <div>
+          <div class="guia-name">${g.name}</div>
+          <div style="font-size:10px;color:var(--text-light);margin-top:2px;">Treino ${g.treino}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="guia-badge">${g.focus.split('·')[0].trim()}</div>
+          <div class="guia-arrow">⌄</div>
+        </div>
+      </div>
+      <div class="guia-body">
+        <div class="guia-row"><strong>Como fazer</strong>${g.como}</div>
+        <div class="guia-row"><strong>Foco muscular</strong>${g.focus}</div>
+        <div class="guia-row"><strong>Erro comum</strong>${g.erro}</div>
+        <div class="guia-row"><strong>💡 Dica prática</strong>${g.dica}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('guia-list').innerHTML = html;
+}
+
+function toggleGuia(id) {
+  document.getElementById(`guia-${id}`).classList.toggle('open');
+}
+
+// ══════════════════════════════════════════
+// AVALIAÇÃO
+// ══════════════════════════════════════════
+
+function renderEval() {
+  const sel = document.getElementById('eval-week-select');
+  const week = parseInt(sel.value);
+  const evalData = state[`w${week}`]?.eval || {};
+  const metrics = METRICS;
+  let html = '';
+  for(const m of metrics) {
+    const key = m.toLowerCase().replace('/','_');
+    const val = evalData[key] || 5;
+    html += `<div class="slider-item">
+      <div class="slider-top">
+        <span class="slider-name">${m}</span>
+        <span class="slider-val" id="sv-${key}">${val}</span>
+      </div>
+      <input type="range" min="1" max="10" value="${val}" oninput="document.getElementById('sv-${key}').textContent=this.value" id="sl-${key}">
+    </div>`;
+  }
+  document.getElementById('sliders-container').innerHTML = html;
+  document.getElementById('eval-notes').value = evalData.notes || '';
+  sel.onchange = renderEval;
+}
+
+function saveEval() {
+  const sel = document.getElementById('eval-week-select');
+  const week = parseInt(sel.value);
+  if(!state[`w${week}`]) state[`w${week}`] = {};
+  const evalData = {};
+  for(const m of METRICS) {
+    const key = m.toLowerCase().replace('/','_');
+    evalData[key] = parseInt(document.getElementById(`sl-${key}`).value);
+  }
+  evalData.notes = document.getElementById('eval-notes').value;
+  state[`w${week}`].eval = evalData;
+  save();
+  showToast('Avaliação salva! ✅');
+}
+
+// ══════════════════════════════════════════
+// HISTÓRICO
+// ══════════════════════════════════════════
+
+function renderHist() {
+  let html = '';
+  const weeks = [];
+  for(let w=1;w<=20;w++) if(state[`w${w}`]?.eval) weeks.push(w);
+  if(!weeks.length) { document.getElementById('hist-content').innerHTML = '<div class="hist-empty">Nenhuma avaliação registrada ainda.<br>Complete sua primeira semana! 💪</div>'; return; }
+  for(const w of weeks.reverse()) {
+    const ev = state[`w${w}`].eval;
+    html += `<div class="hist-item">
+      <div class="hist-week-label">Semana ${w}</div>`;
+    for(const m of METRICS) {
+      const key = m.toLowerCase().replace('/','_');
+      const val = ev[key] || '-';
+      const bar = val !== '-' ? `<div style="width:${val*10}%;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--purple-mid),var(--green-mid));margin-top:2px;"></div>` : '';
+      html += `<div class="hist-row"><span>${m}</span><span class="hist-metric">${val}/10</span></div>`;
+    }
+    if(ev.notes) html += `<div style="font-size:12px;color:var(--text-mid);margin-top:8px;font-style:italic;">"${ev.notes}"</div>`;
+    html += '</div>';
+  }
+  document.getElementById('hist-content').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// INIT
+renderHome();
+renderEval();
+</script>
+</body>
+</html>
